@@ -1,6 +1,7 @@
 FROM python:2.7-slim
 
 RUN apt-get update -y && \
+	apt-get -y install gcc && \
     apt-get install -y --no-install-recommends git && \
     pip install twisted
 

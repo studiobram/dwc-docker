@@ -4,7 +4,7 @@ This provides a Docker setup, which enables you to run your own Multiplayer Serv
 
 ## Requirements
 
-This has only been tested on Ubuntu 20.04.
+This has only been tested on a raspberry pi 2b.
 
  - Docker - ```sudo apt install docker.io```
  - Docker Compose - ```sudo apt install docker-compose```
