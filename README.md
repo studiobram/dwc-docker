@@ -63,7 +63,7 @@ PUBLIC_IP		wiimmfi.de
 ## Installation
 
 ```
-git clone https://github.com/theforcer/dwc-docker/
+git clone https://github.com/studiobram/dwc-docker
 cd dwc-docker
 sudo docker-compose up -d
 ```
