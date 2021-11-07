@@ -65,6 +65,7 @@ Port forward the port 51820/udp to you pi
 
 ```
 git clone https://github.com/studiobram/dwc-docker
+git checkout release/vpn
 cd dwc-docker
 
 docker run -d \
@@ -87,6 +88,11 @@ docker run -d \
   linuxserver/wireguard
   
 # Copy the content from /wireguard/config/peer_dwc/peer_dwc.conf to /wireguard/wg0.conf, you might want to change the ip of the endpoint to the local ip of your pi to make it a bit quicker
+# Add the following code to every wireguard .conf you are gone use
+# [Interface]
+# PostUp = ping -c1 10.13.13.1
+# [Peer]
+# PersistentKeepalive = 25
 
 sudo docker-compose up -d
 
