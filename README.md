@@ -1,6 +1,6 @@
 # DWC Docker Deployment
 
-This provides a Docker setup, which enables you to run your own Multiplayer Server for several Nintendo Wii Games (Mario Kart Wii, SSBB, etc.).
+This provides a Docker setup, which enables you to run your own Multiplayer Server for several Nintendo Wii Games (Mario Kart Wii, SSBB, etc.) and connect to it using a vpn.
 
 ## Requirements
 
@@ -41,31 +41,56 @@ Remember that you need a Dolphin Client with the correct modifications to be abl
 Every client systems also needs the correct DNS records to be able to connect to your server. These can be provided by adding them to the Hosts file of each client:
 
 ```
-PUBLIC_IP		gamestats.gs.nintendowifi.net
-PUBLIC_IP		gamestats2.gs.nintendowifi.net
-PUBLIC_IP		gpcm.gs.nintendowifi.net
-PUBLIC_IP		gpsp.gs.nintendowifi.net
-PUBLIC_IP		mariokartwii.available.gs.nintendowifi.net
-PUBLIC_IP		mariokartwii.gamestats.gs.nintendowifi.net
-PUBLIC_IP		mariokartwii.gamestats2.gs.nintendowifi.net
-PUBLIC_IP		mariokartwii.master.gs.nintendowifi.net
-PUBLIC_IP		mariokartwii.ms19.gs.nintendowifi.net
-PUBLIC_IP		mariokartwii.natneg1.gs.nintendowifi.net
-PUBLIC_IP		mariokartwii.natneg2.gs.nintendowifi.net
-PUBLIC_IP		mariokartwii.natneg3.gs.nintendowifi.net
-PUBLIC_IP		mariokartwii.sake.gs.nintendowifi.net
-PUBLIC_IP		naswii.nintendowifi.net
-PUBLIC_IP		nas.nintendowifi.net
-PUBLIC_IP		nintendowifi.net
-PUBLIC_IP		wiimmfi.de
+10.13.13.2		gamestats.gs.nintendowifi.net
+10.13.13.2		gamestats2.gs.nintendowifi.net
+10.13.13.2		gpcm.gs.nintendowifi.net
+10.13.13.2		gpsp.gs.nintendowifi.net
+10.13.13.2		mariokartwii.available.gs.nintendowifi.net
+10.13.13.2		mariokartwii.gamestats.gs.nintendowifi.net
+10.13.13.2		mariokartwii.gamestats2.gs.nintendowifi.net
+10.13.13.2		mariokartwii.master.gs.nintendowifi.net
+10.13.13.2		mariokartwii.ms19.gs.nintendowifi.net
+10.13.13.2		mariokartwii.natneg1.gs.nintendowifi.net
+10.13.13.2		mariokartwii.natneg2.gs.nintendowifi.net
+10.13.13.2		mariokartwii.natneg3.gs.nintendowifi.net
+10.13.13.2		mariokartwii.sake.gs.nintendowifi.net
+10.13.13.2		naswii.nintendowifi.net
+10.13.13.2		nas.nintendowifi.net
+10.13.13.2		nintendowifi.net
+10.13.13.2		wiimmfi.de
 ```
 
 ## Installation
+Port forward the port 51820/udp to you pi
 
 ```
 git clone https://github.com/studiobram/dwc-docker
 cd dwc-docker
+
+docker run -d \
+  --name=wireguard \
+  --cap-add=NET_ADMIN \
+  --cap-add=SYS_MODULE \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=Europe/London \
+  -e SERVERURL=[Your ip]\
+  -e SERVERPORT=51820 \
+  -e PEERS=dwc,user1,user2,user3,user4,user5,user6,user7,user8,user9,user10,user11,user12, \
+  -e INTERNAL_SUBNET=10.13.13.0 \
+  -e ALLOWEDIPS=10.13.13.0/24 \
+  -p 51820:51820/udp \
+  -v ./wireguard/config:/config \
+  -v /lib/modules:/lib/modules \
+  --sysctl="net.ipv4.conf.all.src_valid_mark=1, net.ipv4.ip_forward=1" \
+  --restart unless-stopped \
+  linuxserver/wireguard
+  
+# Copy the content from /wireguard/config/peer_dwc/peer_dwc.conf to /wireguard/wg0.conf, you might want to change the ip of the endpoint to the local ip of your pi to make it a bit quicker
+
 sudo docker-compose up -d
+
+Afterwords connect to the wireguard vpn on pi with the configuration found in /wireguard/config/peer_user[1-12]/peer_user[1-12].conf
 ```
 
 Persistent data is stored in a Docker-managed volume. With a usual Docker installation, you should find the databases in ```/var/lib/docker/volumes/dwc_data/_data```.
