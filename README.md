@@ -64,6 +64,12 @@ Every client systems also needs the correct DNS records to be able to connect to
 Port forward the port 51820/udp to you pi
 
 ```
+sudo nano /etc/sysctl.conf
+# Add the following line to the bottom of the document
+net.ipv4.ip_forward = 1
+# Save and exit
+sudo sysctl -p /etc/sysctl.conf
+
 git clone https://github.com/studiobram/dwc-docker
 git checkout release/vpn
 cd dwc-docker
@@ -88,7 +94,7 @@ docker run -d \
   linuxserver/wireguard
   
 # Copy the content from /wireguard/config/peer_dwc/peer_dwc.conf to /wireguard/wg0.conf, you might want to change the ip of the endpoint to the local ip of your pi to make it a bit quicker
-# Add the following code to every wireguard .conf you are gone use
+# Add the following code to every wireguard .conf you are gone use (including wg0.conf)
 # [Interface]
 # PostUp = ping -c1 10.13.13.1
 # [Peer]
