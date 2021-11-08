@@ -6,7 +6,12 @@ This provides a Docker setup, which enables you to run your own Multiplayer Serv
 
 This has only been tested on a raspberry pi 2b.
 
- - Docker - ```sudo apt install docker.io```
+ - Docker 
+ ```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker Pi
+ ```
  - Docker Compose - ```sudo apt install docker-compose```
 
 ## Network Setup - Server
@@ -71,8 +76,8 @@ net.ipv4.ip_forward = 1
 sudo sysctl -p /etc/sysctl.conf
 
 git clone https://github.com/studiobram/dwc-docker
-git checkout release/vpn
 cd dwc-docker
+git checkout release/vpn
 
 docker run -d \
   --name=wireguard \
@@ -87,7 +92,7 @@ docker run -d \
   -e INTERNAL_SUBNET=10.13.13.0 \
   -e ALLOWEDIPS=10.13.13.0/24 \
   -p 51820:51820/udp \
-  -v ./wireguard/config:/config \
+  -v /home/pi/dwc-docker/wireguard/config:/config \
   -v /lib/modules:/lib/modules \
   --sysctl="net.ipv4.conf.all.src_valid_mark=1, net.ipv4.ip_forward=1" \
   --restart unless-stopped \
